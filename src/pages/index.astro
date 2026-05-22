@@ -1,0 +1,77 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Search from "@/components/Search.astro";
+import { getCollection } from "astro:content";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+const notes = await getCollection("notes", ({ data }) => !data.draft);
+const categories = [...new Set(notes.map((n) => n.data.category))].sort();
+
+const categoryMeta: Record<string, { icon: string; desc: string }> = {
+  language: { icon: "⟨ ⟩", desc: "Programming languages" },
+  tool: { icon: "⚙", desc: "Developer tools & utilities" },
+  framework: { icon: "■", desc: "Frameworks & libraries" },
+};
+---
+
+<Layout title="Home" description="Personal documentation site by Dev Hari Ojha">
+  <div class="min-h-screen flex flex-col">
+    <header class="sticky top-0 z-40 border-b border-border glass">
+      <div class="flex items-center justify-between h-14 px-4 lg:px-6 max-w-5xl mx-auto w-full">
+        <span class="text-lg font-bold">DocSii</span>
+        <Search />
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <section class="py-20 px-4">
+        <div class="max-w-3xl mx-auto text-center">
+          <h1 class="text-4xl sm:text-5xl font-bold mb-4">DocSii</h1>
+          <p class="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
+            Curated technical notes by <strong>Dev Hari Ojha</strong>
+          </p>
+        </div>
+      </section>
+
+      <section class="pb-20 px-4">
+        <div class="max-w-5xl mx-auto">
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {categories.map((cat) => {
+              const meta = categoryMeta[cat] || { icon: "•", desc: cat };
+              const catNotes = notes.filter((n) => n.data.category === cat);
+              const topics = [...new Set(catNotes.map((n) => n.data.topic).filter(Boolean))];
+              const firstNote = catNotes.sort((a, b) => a.data.order - b.data.order)[0];
+              return (
+                  <a href={`/${firstNote.id}`} class="no-underline">
+                  <Card class="glass-card hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5">
+                    <CardHeader>
+                      <div class="text-2xl mb-2">{meta.icon}</div>
+                      <CardTitle class="capitalize">{cat}</CardTitle>
+                      <CardDescription>{meta.desc}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div class="text-sm text-muted-foreground">
+                        {topics.length > 0 ? (
+                          <div class="flex flex-wrap gap-1.5">
+                            {topics.map((t) => (
+                              <span class="px-2 py-0.5 rounded-full bg-accent text-accent-foreground text-xs">
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span>{catNotes.length} notes</span>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</Layout>

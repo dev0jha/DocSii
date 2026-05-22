@@ -1,0 +1,81 @@
+---
+import { getCollection } from "astro:content";
+
+const allNotes = await getCollection("notes", ({ data }) => !data.draft);
+
+type CategoryGroup = {
+  category: string;
+  topics: Map<string, { slug: string; title: string; order: number }[]>;
+};
+
+const grouped = allNotes.reduce<Map<string, CategoryGroup>>((acc, note) => {
+  const { category, topic, title, order } = note.data;
+  if (!acc.has(category)) {
+    acc.set(category, { category, topics: new Map() });
+  }
+  const group = acc.get(category)!;
+  const topicKey = topic || "__untopiced__";
+  if (!group.topics.has(topicKey)) {
+    group.topics.set(topicKey, []);
+  }
+  group.topics.get(topicKey)!.push({
+    slug: note.id,
+    title,
+    order,
+  });
+  return acc;
+}, new Map());
+
+const sortedCategories = [...grouped.values()].sort((a, b) =>
+  a.category.localeCompare(b.category)
+);
+
+for (const group of sortedCategories) {
+  for (const [, notes] of group.topics) {
+    notes.sort((a, b) => a.order - b.order);
+  }
+}
+
+const currentSlug = Astro.params.slug;
+const fullSlug = currentSlug ? `notes/${currentSlug}` : undefined;
+---
+
+<aside class="w-64 shrink-0 h-screen sticky top-0 overflow-y-auto border-r border-border bg-sidebar glass">
+  <div class="p-4">
+    <a href="/" class="flex items-center gap-2 mb-6 no-underline">
+      <span class="text-xl font-bold text-foreground">DocSii</span>
+    </a>
+    <nav class="space-y-1">
+      {sortedCategories.map((group) => (
+        <div class="mb-4">
+          <div class="px-2 py-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            {group.category}
+          </div>
+          {[...group.topics.entries()].map(([topicKey, notes]) => (
+            <div class="ml-1">
+              {topicKey !== "__untopiced__" && (
+                <div class="px-2 py-1 text-sm font-medium text-foreground">
+                  {topicKey}
+                </div>
+              )}
+              <div class="space-y-0.5">
+                {notes.map((note) => (
+                  <a
+                    href={`/${note.slug}`}
+                    class={`block px-2 py-1.5 text-sm rounded-md transition-colors no-underline ${
+                      fullSlug === note.slug
+                        ? "bg-accent text-accent-foreground font-medium"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                    }`}
+                  >
+                    {note.title}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ))}
+    </nav>
+  </div>
+</aside>

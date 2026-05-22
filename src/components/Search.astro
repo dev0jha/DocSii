@@ -1,0 +1,16 @@
+---
+import { getCollection } from "astro:content";
+import { Search } from "./Search";
+
+const notes = await getCollection("notes", ({ data }) => !data.draft);
+const searchItems = notes.map((note) => ({
+  slug: note.id,
+  title: note.data.title,
+  description: note.data.description,
+  category: note.data.category,
+  topic: note.data.topic,
+  tags: note.data.tags,
+}));
+---
+
+<Search items={searchItems} client:load />
