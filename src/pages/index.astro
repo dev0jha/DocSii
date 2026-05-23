@@ -1,77 +1,416 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import Search from "@/components/Search.astro";
+import HeroSearchWrapper from "@/components/HeroSearchWrapper.astro";
 import { getCollection } from "astro:content";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 const notes = await getCollection("notes", ({ data }) => !data.draft);
 const categories = [...new Set(notes.map((n) => n.data.category))].sort();
 
-const categoryMeta: Record<string, { icon: string; desc: string }> = {
-  language: { icon: "⟨ ⟩", desc: "Programming languages" },
-  tool: { icon: "⚙", desc: "Developer tools & utilities" },
-  framework: { icon: "■", desc: "Frameworks & libraries" },
+const categoryMeta: Record<string, { icon: string; desc: string; color: string }> = {
+  language: { icon: "⟨ ⟩", desc: "Programming languages", color: "#9fbbe0" },
+  tool: { icon: "⚙", desc: "Developer tools & utilities", color: "#c0a8dd" },
+  framework: { icon: "■", desc: "Frameworks & libraries", color: "#9fc9a2" },
 };
+
+const totalNotes = notes.length;
+const totalTopics = [...new Set(notes.map((n) => n.data.topic).filter(Boolean))].length;
 ---
 
-<Layout title="Home" description="Personal documentation site by Dev Hari Ojha">
-  <div class="min-h-screen flex flex-col">
-    <header class="sticky top-0 z-40 border-b border-border glass">
-      <div class="flex items-center justify-between h-14 px-4 lg:px-6 max-w-5xl mx-auto w-full">
-        <span class="text-lg font-bold">DocSii</span>
-        <Search />
+<Layout title="Home" description="Curated technical notes by Dev Hari Ojha">
+  <div class="landing">
+    <!-- Nav -->
+    <nav class="landing-nav">
+      <div class="landing-nav-inner">
+        <a href="/" class="landing-logo">DocSii</a>
+        <div class="landing-nav-right">
+          <span class="landing-nav-stat">{totalNotes} notes</span>
+        </div>
       </div>
-    </header>
+    </nav>
 
-    <main class="flex-1">
-      <section class="py-20 px-4">
-        <div class="max-w-3xl mx-auto text-center">
-          <h1 class="text-4xl sm:text-5xl font-bold mb-4">DocSii</h1>
-          <p class="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-            Curated technical notes by <strong>Dev Hari Ojha</strong>
-          </p>
+    <!-- Hero -->
+    <section class="landing-hero">
+      <div class="landing-hero-inner">
+        <div class="landing-hero-badge">
+          <span class="landing-hero-badge-dot"></span>
+          Open-source knowledge base
         </div>
-      </section>
+        <h1 class="landing-title">
+          Doc<span class="landing-title-accent">Sii</span>
+        </h1>
+        <p class="landing-subtitle">
+          Curated technical notes by <strong>Dev Hari Ojha</strong>
+        </p>
+        <div class="landing-search-wrap">
+          <HeroSearchWrapper />
+        </div>
+        <p class="landing-hint">
+          Press <kbd>/</kbd> to search · {totalNotes} notes across {totalTopics} topics
+        </p>
+      </div>
+    </section>
 
-      <section class="pb-20 px-4">
-        <div class="max-w-5xl mx-auto">
-          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {categories.map((cat) => {
-              const meta = categoryMeta[cat] || { icon: "•", desc: cat };
-              const catNotes = notes.filter((n) => n.data.category === cat);
-              const topics = [...new Set(catNotes.map((n) => n.data.topic).filter(Boolean))];
-              const firstNote = catNotes.sort((a, b) => a.data.order - b.data.order)[0];
-              return (
-                  <a href={`/${firstNote.id}`} class="no-underline">
-                  <Card class="glass-card hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5">
-                    <CardHeader>
-                      <div class="text-2xl mb-2">{meta.icon}</div>
-                      <CardTitle class="capitalize">{cat}</CardTitle>
-                      <CardDescription>{meta.desc}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div class="text-sm text-muted-foreground">
-                        {topics.length > 0 ? (
-                          <div class="flex flex-wrap gap-1.5">
-                            {topics.map((t) => (
-                              <span class="px-2 py-0.5 rounded-full bg-accent text-accent-foreground text-xs">
-                                {t}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <span>{catNotes.length} notes</span>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </a>
-              );
-            })}
-          </div>
+    <!-- Categories -->
+    <section class="landing-categories">
+      <div class="landing-categories-inner">
+        <h2 class="landing-section-title">Browse by category</h2>
+        <div class="landing-cards-grid">
+          {categories.map((cat) => {
+            const meta = categoryMeta[cat] || { icon: "•", desc: cat, color: "#e6e5e0" };
+            const catNotes = notes.filter((n) => n.data.category === cat);
+            const topics = [...new Set(catNotes.map((n) => n.data.topic).filter(Boolean))];
+            const firstNote = catNotes.sort((a, b) => a.data.order - b.data.order)[0];
+            return (
+              <a href={`/${firstNote.id}`} class="landing-card">
+                <div class="landing-card-icon-wrap" style={`background-color: ${meta.color}20; color: ${meta.color};`}>
+                  <span class="landing-card-icon">{meta.icon}</span>
+                </div>
+                <div class="landing-card-body">
+                  <h3 class="landing-card-title">{cat}</h3>
+                  <p class="landing-card-desc">{meta.desc}</p>
+                  <div class="landing-card-tags">
+                    {topics.length > 0 ? (
+                      topics.map((t) => (
+                        <span class="landing-tag">{t}</span>
+                      ))
+                    ) : (
+                      <span class="landing-tag">{catNotes.length} notes</span>
+                    )}
+                  </div>
+                </div>
+                <div class="landing-card-arrow">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                </div>
+              </a>
+            );
+          })}
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+      <div class="landing-footer-inner">
+        <span class="landing-footer-text">Built with ❤ by Dev Hari Ojha</span>
+        <span class="landing-footer-sep">·</span>
+        <span class="landing-footer-text">Powered by Astro</span>
+      </div>
+    </footer>
   </div>
 </Layout>
+
+<style>
+  /* ─── Landing page layout ─── */
+  .landing {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  /* ─── Nav ─── */
+  .landing-nav {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    border-bottom: 1px solid var(--border);
+    background-color: var(--background);
+  }
+  .landing-nav-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .landing-logo {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--foreground);
+    text-decoration: none;
+    letter-spacing: -0.5px;
+  }
+  .landing-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .landing-nav-stat {
+    font-size: 13px;
+    font-weight: 500;
+    color: #807d72;
+    background: #e6e5e0;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  /* ─── Hero ─── */
+  .landing-hero {
+    padding: 80px 24px 48px;
+    text-align: center;
+    background-color: var(--background);
+  }
+  .landing-hero-inner {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .landing-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #807d72;
+    margin-bottom: 24px;
+  }
+  .landing-hero-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #1f8a65;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+  .landing-title {
+    font-size: 64px;
+    font-weight: 700;
+    color: #26251e;
+    letter-spacing: -2px;
+    line-height: 1.05;
+    margin: 0 0 12px;
+  }
+  .landing-title-accent {
+    color: #f54e00;
+  }
+  .landing-subtitle {
+    font-size: 16px;
+    color: #5a5852;
+    margin: 0 0 36px;
+    line-height: 1.5;
+  }
+  .landing-subtitle strong {
+    color: #26251e;
+    font-weight: 600;
+  }
+  .landing-search-wrap {
+    max-width: 480px;
+    margin: 0 auto 16px;
+  }
+  .landing-hint {
+    font-size: 13px;
+    color: #a09c92;
+    margin: 0;
+  }
+  .landing-hint kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: inherit;
+    border: 1px solid #cfcdc4;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #5a5852;
+    margin: 0 1px;
+    vertical-align: middle;
+  }
+
+  /* ─── Categories ─── */
+  .landing-categories {
+    flex: 1;
+    padding: 32px 24px 64px;
+    background-color: var(--background);
+  }
+  .landing-categories-inner {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .landing-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.88px;
+    color: #a09c92;
+    margin: 0 0 20px;
+  }
+  .landing-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .landing-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: #ffffff;
+    border: 1px solid #e6e5e0;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  }
+  .landing-card:hover {
+    border-color: #cfcdc4;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+  }
+  .landing-card-icon-wrap {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .landing-card-icon {
+    font-size: 18px;
+    line-height: 1;
+  }
+  .landing-card-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .landing-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #26251e;
+    text-transform: capitalize;
+    margin: 0 0 2px;
+  }
+  .landing-card-desc {
+    font-size: 13px;
+    color: #807d72;
+    margin: 0 0 8px;
+  }
+  .landing-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .landing-tag {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: #efeee8;
+    color: #5a5852;
+  }
+  .landing-card-arrow {
+    color: #cfcdc4;
+    flex-shrink: 0;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+  .landing-card:hover .landing-card-arrow {
+    color: #f54e00;
+    transform: translateX(2px);
+  }
+
+  /* ─── Footer ─── */
+  .landing-footer {
+    border-top: 1px solid var(--border);
+    padding: 24px;
+    background-color: var(--background);
+  }
+  .landing-footer-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .landing-footer-text {
+    font-size: 13px;
+    color: #a09c92;
+  }
+  .landing-footer-sep {
+    font-size: 13px;
+    color: #cfcdc4;
+  }
+
+  /* ─── Dark mode overrides ─── */
+  :global(.dark) .landing-title {
+    color: #efeee8;
+  }
+  :global(.dark) .landing-title-accent {
+    color: #f54e00;
+  }
+  :global(.dark) .landing-subtitle {
+    color: #a09c92;
+  }
+  :global(.dark) .landing-subtitle strong {
+    color: #efeee8;
+  }
+  :global(.dark) .landing-nav-stat {
+    background: #33322a;
+    color: #a09c92;
+  }
+  :global(.dark) .landing-card {
+    background: #26251e;
+    border-color: #3d3c33;
+  }
+  :global(.dark) .landing-card:hover {
+    border-color: #5a5852;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+  :global(.dark) .landing-card-title {
+    color: #efeee8;
+  }
+  :global(.dark) .landing-card-desc {
+    color: #a09c92;
+  }
+  :global(.dark) .landing-tag {
+    background: #33322a;
+    color: #a09c92;
+  }
+  :global(.dark) .landing-card-arrow {
+    color: #5a5852;
+  }
+  :global(.dark) .landing-card:hover .landing-card-arrow {
+    color: #f54e00;
+  }
+  :global(.dark) .landing-section-title {
+    color: #807d72;
+  }
+  :global(.dark) .landing-hint {
+    color: #807d72;
+  }
+  :global(.dark) .landing-hint kbd {
+    background: #33322a;
+    border-color: #5a5852;
+    color: #a09c92;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 640px) {
+    .landing-hero {
+      padding: 48px 20px 32px;
+    }
+    .landing-title {
+      font-size: 42px;
+      letter-spacing: -1.2px;
+    }
+    .landing-categories {
+      padding: 24px 20px 48px;
+    }
+    .landing-cards-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

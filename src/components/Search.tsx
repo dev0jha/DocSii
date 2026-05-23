@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Fuse from "fuse.js";
-import { Dialog } from "@/components/ui/dialog";
+import { Dialog, DialogBackdrop, DialogPortal } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 
@@ -92,59 +92,74 @@ export function Search({ items }: SearchProps) {
         aria-label="Search"
         class="flex items-center gap-2 text-muted-foreground"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <span class="hidden sm:inline text-sm">Search</span>
-        <Kbd class="ml-auto hidden sm:inline-flex">{typeof navigator !== "undefined" && navigator.platform.includes("Mac") ? "⌘" : "Ctrl"}K</Kbd>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span className="hidden sm:inline text-sm">Search</span>
+        <Kbd className="ml-auto hidden sm:inline-flex">{typeof navigator !== "undefined" && navigator.platform.includes("Mac") ? "⌘" : "Ctrl"}K</Kbd>
       </Button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <div class="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]">
-          <div class="w-full max-w-lg mx-4">
-            <div class="glass rounded-xl overflow-hidden">
-              <div class="flex items-center gap-2 px-4 border-b border-border">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted-foreground shrink-0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                <input
-                  ref={inputRef}
-                  value={query}
-                  onChange={(e) => doSearch(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Search notes..."
-                  class="flex-1 bg-transparent border-none outline-none py-3 text-sm text-foreground placeholder:text-muted-foreground"
-                />
-                <Kbd>ESC</Kbd>
+      {open && (
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogPortal>
+            <DialogBackdrop />
+            <div
+              className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]"
+              onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}
+            >
+              <div className="w-full max-w-lg mx-4">
+                <div
+                  className="rounded-xl overflow-hidden shadow-xl"
+                  style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
+                >
+                  <div
+                    className="flex items-center gap-2 px-4"
+                    style={{ borderBottom: '1px solid var(--border)' }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--muted-foreground)', flexShrink: 0 }}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    <input
+                      ref={inputRef}
+                      value={query}
+                      onChange={(e) => doSearch(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      placeholder="Search notes..."
+                      className="flex-1 bg-transparent border-none outline-none py-3 text-sm"
+                      style={{ color: 'var(--foreground)' }}
+                    />
+                    <Kbd>ESC</Kbd>
+                  </div>
+                  {results.length > 0 && (
+                    <div className="max-h-80 overflow-y-auto p-2">
+                      {results.map((item, i) => (
+                        <a
+                          key={item.slug}
+                          href={`/${item.slug}`}
+                          onClick={() => setOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors no-underline"
+                          style={{
+                            backgroundColor: i === selectedIndex ? 'var(--accent)' : 'transparent',
+                            color: 'var(--foreground)',
+                          }}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium truncate">{item.title}</div>
+                            <div className="text-xs truncate" style={{ color: 'var(--muted-foreground)' }}>
+                              {item.category}{item.topic ? ` / ${item.topic}` : ""}
+                            </div>
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                  {query && results.length === 0 && (
+                    <div className="p-6 text-center text-sm" style={{ color: 'var(--muted-foreground)' }}>
+                      No results found
+                    </div>
+                  )}
+                </div>
               </div>
-              {results.length > 0 && (
-                <div class="max-h-80 overflow-y-auto p-2">
-                  {results.map((item, i) => (
-                    <a
-                      key={item.slug}
-                      href={`/${item.slug}`}
-                      onClick={() => setOpen(false)}
-                      class={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors no-underline ${
-                        i === selectedIndex
-                          ? "bg-accent text-accent-foreground"
-                          : "text-foreground hover:bg-accent/50"
-                      }`}
-                    >
-                      <div class="flex-1 min-w-0">
-                        <div class="font-medium truncate">{item.title}</div>
-                        <div class="text-xs text-muted-foreground truncate">
-                          {item.category}{item.topic ? ` / ${item.topic}` : ""}
-                        </div>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              )}
-              {query && results.length === 0 && (
-                <div class="p-6 text-center text-sm text-muted-foreground">
-                  No results found
-                </div>
-              )}
             </div>
-          </div>
-        </div>
-      </Dialog>
+          </DialogPortal>
+        </Dialog>
+      )}
     </>
   );
 }

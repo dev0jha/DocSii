@@ -17,4 +17,3 @@ const notesCollection = defineCollection({
 export const collections = {
   notes: notesCollection,
 };
-``

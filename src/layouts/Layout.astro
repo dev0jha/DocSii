@@ -24,9 +24,12 @@ const { title, description } = Astro.props;
     <slot />
     <script is:inline>
       const theme = localStorage.getItem("theme");
-      if (theme === "dark" || (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+      if (theme === "dark") {
         document.documentElement.classList.add("dark");
+      } else if (theme === "light") {
+        document.documentElement.classList.remove("dark");
       }
+      // Default: light mode (no class needed)
     </script>
   </body>
 </html>

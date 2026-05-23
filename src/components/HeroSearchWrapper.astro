@@ -1,0 +1,16 @@
+---
+import { getCollection } from "astro:content";
+import { HeroSearch } from "./HeroSearch";
+
+const notes = await getCollection("notes", ({ data }) => !data.draft);
+const searchItems = notes.map((note) => ({
+  slug: note.id,
+  title: note.data.title,
+  description: note.data.description,
+  category: note.data.category,
+  topic: note.data.topic,
+  tags: note.data.tags,
+}));
+---
+
+<HeroSearch items={searchItems} client:load />

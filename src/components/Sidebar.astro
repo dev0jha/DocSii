@@ -40,7 +40,7 @@ const currentSlug = Astro.params.slug;
 const fullSlug = currentSlug ? `notes/${currentSlug}` : undefined;
 ---
 
-<aside class="w-64 shrink-0 h-screen sticky top-0 overflow-y-auto border-r border-border bg-sidebar glass">
+<aside class="w-64 shrink-0 h-screen sticky top-0 overflow-y-auto border-r border-border" style="background-color: var(--sidebar);">
   <div class="p-4">
     <a href="/" class="flex items-center gap-2 mb-6 no-underline">
       <span class="text-xl font-bold text-foreground">DocSii</span>
