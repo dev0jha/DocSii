@@ -32,6 +32,10 @@ const { title, description, headings } = Astro.props;
       <div class="flex flex-1">
         <main class="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-8 max-w-3xl mx-auto lg:mx-auto">
           <article class="prose prose-neutral dark:prose-invert max-w-none">
+            <div class="mb-8 pb-6 border-b border-border">
+              <h1 class="text-4xl font-extrabold tracking-tight text-foreground mb-2 mt-0">{title}</h1>
+              {description && <p class="text-lg text-muted-foreground mt-2 mb-0">{description}</p>}
+            </div>
             <slot />
           </article>
         </main>
