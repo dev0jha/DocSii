@@ -37,7 +37,16 @@ for (const group of sortedCategories) {
 }
 
 const currentSlug = Astro.params.slug;
-const fullSlug = currentSlug ? `notes/${currentSlug}` : undefined;
+
+function formatTopic(topic: string) {
+  if (topic === "tanstackquery") return "TanStack Query";
+  if (topic === "react") return "React";
+  if (topic === "javascript") return "JavaScript";
+  if (topic === "python") return "Python";
+  if (topic === "docker") return "Docker";
+  if (topic === "git-and-github") return "Git & GitHub";
+  return topic.charAt(0).toUpperCase() + topic.slice(1);
+}
 ---
 
 <aside class="w-64 shrink-0 h-screen sticky top-0 overflow-y-auto border-r border-border" style="background-color: var(--sidebar);">
@@ -45,33 +54,68 @@ const fullSlug = currentSlug ? `notes/${currentSlug}` : undefined;
     <a href="/" class="flex items-center gap-2 mb-6 no-underline">
       <span class="text-xl font-bold text-foreground">DocSii</span>
     </a>
-    <nav class="space-y-1">
+    <nav class="space-y-4">
       {sortedCategories.map((group) => (
         <div class="mb-4">
-          <div class="px-2 py-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <div class="px-2 py-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60 mb-2">
             {group.category}
           </div>
           {[...group.topics.entries()].map(([topicKey, notes]) => (
-            <div class="ml-1">
-              {topicKey !== "__untopiced__" && (
-                <div class="px-2 py-1 text-sm font-medium text-foreground">
-                  {topicKey}
+            <div class="mb-2">
+              {topicKey !== "__untopiced__" ? (
+                <details open class="group">
+                  <summary class="flex items-center gap-1.5 px-2 py-1.5 text-sm font-bold text-foreground cursor-pointer hover:text-primary transition-colors select-none list-none [&::-webkit-details-marker]:hidden">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      class="transition-transform duration-200 group-open:rotate-0 -rotate-90 text-foreground shrink-0"
+                    >
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                    <span class="tracking-tight">{formatTopic(topicKey)}</span>
+                  </summary>
+                  <div class="ml-3.5 pl-3 border-l border-border/80 space-y-1 mt-0.5 mb-1.5">
+                    {notes.map((note) => {
+                      const isActive = currentSlug === note.slug;
+                      return (
+                        <a
+                          href={`/${note.slug}`}
+                          class={`block py-1 text-[13.5px] transition-all no-underline ${
+                            isActive
+                              ? "text-primary font-bold"
+                              : "text-muted-foreground hover:text-foreground font-medium"
+                          }`}
+                        >
+                          {note.title}
+                        </a>
+                      );
+                    })}
+                  </div>
+                </details>
+              ) : (
+                <div class="space-y-1 ml-3.5 pl-3 border-l border-border/80">
+                  {notes.map((note) => {
+                    const isActive = currentSlug === note.slug;
+                    return (
+                      <a
+                        href={`/${note.slug}`}
+                        class={`block py-1 text-[13.5px] transition-all no-underline ${
+                          isActive
+                            ? "text-primary font-bold"
+                            : "text-muted-foreground hover:text-foreground font-medium"
+                        }`}
+                      >
+                        {note.title}
+                      </a>
+                    );
+                  })}
                 </div>
               )}
-              <div class="space-y-0.5">
-                {notes.map((note) => (
-                  <a
-                    href={`/${note.slug}`}
-                    class={`block px-2 py-1.5 text-sm rounded-md transition-colors no-underline ${
-                      fullSlug === note.slug
-                        ? "bg-accent text-accent-foreground font-medium"
-                        : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                    }`}
-                  >
-                    {note.title}
-                  </a>
-                ))}
-              </div>
             </div>
           ))}
         </div>
@@ -79,3 +123,17 @@ const fullSlug = currentSlug ? `notes/${currentSlug}` : undefined;
     </nav>
   </div>
 </aside>
+
+<style>
+  /* Hide native summary marker in different browsers */
+  summary {
+    display: flex;
+    align-items: center;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary::marker {
+    display: none;
+  }
+</style>
