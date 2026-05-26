@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, passthroughImageService } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
@@ -7,6 +7,9 @@ import path from 'path';
 // https://astro.build/config
 export default defineConfig({
   integrations: [react()],
+  image: {
+    service: passthroughImageService(),
+  },
   vite: {
     plugins: [tailwindcss()],
     resolve: {
