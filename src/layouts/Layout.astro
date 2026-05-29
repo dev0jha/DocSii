@@ -18,6 +18,23 @@ const { title, description } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title} | DocSii</title>
     {description && <meta name="description" content={description} />}
+    <meta name="keywords" content="technical notes, programming cheat sheets, web development reference, databases, react, docker, git, python, javascript, tanstack query, Dev Hari Ojha, DocSii" />
+    <meta name="author" content="Dev Hari Ojha" />
+    <meta name="theme-color" content="#0c0b09" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={`${title} | DocSii`} />
+    {description && <meta property="og:description" content={description} />}
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={`${title} | DocSii`} />
+    {description && <meta property="twitter:description" content={description} />}
+
     <meta name="generator" content={Astro.generator} />
   </head>
   <body>
