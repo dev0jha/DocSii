@@ -33,7 +33,7 @@ export function HeroSearch({ items }: HeroSearchProps) {
       ],
       threshold: 0.4,
       includeScore: true,
-    })
+    }),
   );
 
   // Keyboard shortcut to focus search
@@ -55,7 +55,10 @@ export function HeroSearch({ items }: HeroSearchProps) {
   // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
         setIsFocused(false);
       }
     };
@@ -122,9 +125,7 @@ export function HeroSearch({ items }: HeroSearchProps) {
           className="hero-search-input"
           autoComplete="off"
         />
-        {!isFocused && (
-          <kbd className="hero-search-kbd">/</kbd>
-        )}
+        {!isFocused && <kbd className="hero-search-kbd">/</kbd>}
       </div>
 
       {/* Dropdown results */}
@@ -143,10 +144,22 @@ export function HeroSearch({ items }: HeroSearchProps) {
                 <div className="hero-search-result-text">
                   <span className="hero-search-result-title">{item.title}</span>
                   <span className="hero-search-result-meta">
-                    {item.category}{item.topic ? ` › ${item.topic}` : ""}
+                    {item.category}
+                    {item.topic ? ` › ${item.topic}` : ""}
                   </span>
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="hero-search-result-arrow"><path d="m9 18 6-6-6-6"/></svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="hero-search-result-arrow"
+                >
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
               </a>
             ))
           ) : (
