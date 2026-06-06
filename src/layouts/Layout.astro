@@ -7,7 +7,7 @@ export interface Props {
   description?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description = "Technical notes, programming cheat sheets, and web development reference by Dev Hari Ojha." } = Astro.props;
 ---
 
 <!doctype html>
@@ -15,9 +15,9 @@ const { title, description } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title} | DocSii</title>
-    {description && <meta name="description" content={description} />}
+    <link rel="icon" type="image/png" href="/DocSii 2.png" />
+    <title>DocSii - Technical notes by Dev Hari Ojha </title>
+    <meta name="description" content={`DocSii - ${description}`} />
     <meta name="keywords" content="technical notes, programming cheat sheets, web development reference, databases, react, docker, git, python, javascript, tanstack query, Dev Hari Ojha, DocSii" />
     <meta name="author" content="Dev Hari Ojha" />
     <meta name="theme-color" content="#0c0b09" />
@@ -27,13 +27,13 @@ const { title, description } = Astro.props;
     <meta property="og:type" content="website" />
     <meta property="og:url" content={Astro.url} />
     <meta property="og:title" content={`${title} | DocSii`} />
-    {description && <meta property="og:description" content={description} />}
+    <meta property="og:description" content={`DocSii - ${description}`} />
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary" />
     <meta property="twitter:url" content={Astro.url} />
     <meta property="twitter:title" content={`${title} | DocSii`} />
-    {description && <meta property="twitter:description" content={description} />}
+    <meta property="twitter:description" content={`DocSii - ${description}`} />
 
     <meta name="generator" content={Astro.generator} />
   </head>
