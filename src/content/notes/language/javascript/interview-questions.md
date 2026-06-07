@@ -1,320 +1,268 @@
 ---
 title: "JavaScript Interview Questions"
-description: "Common JavaScript interview questions covering let/var/const, hoisting, closures, and more."
+description: "Comprehensive JavaScript interview questions covering basics, functions, advanced concepts, async JS, and browser concepts."
 category: "language"
 topic: "javascript"
 order: 6
 tags: ["javascript", "interview", "questions"]
-lastUpdated: 2026-06-05
+lastUpdated: 2026-06-07
 ---
 
-# Interview Question
+# JavaScript Interview Questions
 
-### 1. Difference between let, var and const ?
+A complete guide to JavaScript interview questions, categorized from basics to advanced concepts. Reference taken from [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript).
 
-   → All of these  used to declare a variable on javascript ;-
+---
 
-- **var**: Function or global scope. Can be re-declared and updated.
-- **let**: Block scope. Can be updated but not re-declared in the same block.
-- **const**: Block scope. Cannot be updated or re-declared. Requires initialization.
+## Basics
 
-```jsx
-var a = 1;    // function or global scope
-let b = 2;    // block scope
-const c = 3;  // block scope; must be initialized
+### var vs let vs const
+
+In JavaScript, there are three ways to declare variables.
+
+| Feature | `var` | `let` | `const` |
+| :--- | :--- | :--- | :--- |
+| **Scope** | Function / Global | Block | Block |
+| **Redeclaration** | Yes | No | No |
+| **Reassignment** | Yes | Yes | No |
+| **Hoisting** | Yes (initialized as `undefined`) | Yes (Temporal Dead Zone) | Yes (Temporal Dead Zone) |
+
+### Primitive vs Non-Primitive Data Types
+
+- **Primitive Types**: Immutable values that are not objects.
+  - `String`, `Number`, `BigInt`, `Boolean`, `Undefined`, `Null`, `Symbol`.
+  - Passed by **value**.
+- **Non-Primitive Types**: Objects.
+  - `Object`, `Array`, `Function`, `Date`, etc.
+  - Passed by **reference**.
+
+### Type Coercion
+
+Type coercion is the automatic or implicit conversion of values from one data type to another (such as strings to numbers).
+- **Implicit Coercion**: `1 + "2"` results in `"12"` (String concatenation).
+- **Explicit Coercion**: `Number("2")` results in `2`.
+
+### == vs ===
+
+- `==` (Loose Equality): Compares two values for equality after performing type coercion. Example: `1 == "1"` is `true`.
+- `===` (Strict Equality): Compares two values for equality without type coercion. Both value and type must be the same. Example: `1 === "1"` is `false`.
+
+### Truthy & Falsy Values
+
+A falsy value is a value that is considered false when encountered in a boolean context.
+- **Falsy values**: `false`, `0`, `-0`, `0n`, `""`, `null`, `undefined`, and `NaN`.
+- **Truthy values**: Everything else, including empty arrays `[]` and empty objects `{}`.
+
+### Scope
+
+Scope determines the accessibility (visibility) of variables.
+1. **Global Scope**: Variables declared outside any function or block.
+2. **Function Scope**: Variables declared inside a function (using `var`, `let`, `const`).
+3. **Block Scope**: Variables declared inside a `{ }` block using `let` or `const`.
+
+---
+
+## Functions
+
+### Function Declaration vs Expression
+
+- **Function Declaration**: Defined using the `function` keyword and is hoisted to the top of its scope.
+  ```js
+  function greet() { return "Hello"; }
+  ```
+- **Function Expression**: Assigned to a variable. Not hoisted.
+  ```js
+  const greet = function() { return "Hello"; };
+  ```
+
+### Arrow Functions
+
+Introduced in ES6, they provide a shorter syntax and lexically bind the `this` value (they don't have their own `this`).
+```js
+const add = (a, b) => a + b;
 ```
 
-- With the keyword [`var`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/var). For example, `var x = 42`. This syntax can be used to declare both **local** and **global** variables, depending on the *execution context*.
-- With the keyword [`const`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const) or [`let`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let). For example, `let y = 13`. This syntax can be used to declare a block-scope local variable.
-- All the differences occur in hoisting of variables..
+### Higher Order Functions
 
-### 2. Define Hoisting in JS ?
+A function that takes another function as an argument or returns a function. Example: `map`, `filter`, `reduce`.
 
-→ Hoisting refers to the process whereby the interpreter appears to more the declarations to the top of the code before execution .
+### Callback Functions
 
-→ in JS , Whatever declaration is there in it seems to be placed at the top of the code..
+A callback is a function passed into another function as an argument, which is then invoked inside the outer function to complete some kind of routine or action.
 
-- Function expression and class expression is not hoisted..
+### First Class Functions
 
-```jsx
-greet() 
-function greet(){
-console.log ("hello")
+In JavaScript, functions are treated as first-class citizens. This means functions can be assigned to variables, passed as arguments to other functions, and returned from functions.
+
+---
+
+## Advanced Concepts
+
+### Closures
+
+A closure is the combination of a function bundled together (enclosed) with references to its surrounding state (the lexical environment). A closure gives you access to an outer function's scope from an inner function.
+
+### Lexical Environment
+
+It consists of the local memory along with the lexical environment of its parent. It resolves where variables live and how they are accessed based on where they are written in the source code.
+
+### Hoisting
+
+Hoisting is JavaScript's default behavior of moving declarations to the top of the current scope.
+- `var` declarations are hoisted and initialized with `undefined`.
+- `let` and `const` are hoisted but not initialized (they remain in the Temporal Dead Zone).
+
+### Temporal Dead Zone (TDZ)
+
+The period from the start of the block until the declaration is evaluated. Accessing the variable in this zone throws a `ReferenceError`.
+
+### Call Stack & Execution Context
+
+- **Execution Context**: The environment in which JavaScript code is evaluated and executed. Contains the Variable Environment, Lexical Environment, and `this` binding.
+- **Call Stack**: A LIFO (Last In, First Out) stack used to store all the execution contexts created during code execution.
+
+```mermaid
+flowchart TD
+    A[Global Execution Context] --> B[Function Call 1]
+    B --> C[Function Call 2]
+    C --> D[Execution Completes]
+    D -. Pops Context .-> B
+    B -. Pops Context .-> A
+```
+
+### Event Loop
+
+The Event Loop is a mechanism that allows JavaScript to perform non-blocking operations by offloading operations to the system kernel whenever possible.
+
+```mermaid
+flowchart LR
+    CS[Call Stack] -->|Synchronous Code| E[Execution]
+    CS -->|Async Web API| WA[Web APIs - setTimeout, fetch]
+    WA -->|Callback| TQ[Task Queue]
+    WA -->|Promises| MQ[Microtask Queue]
+    MQ -->|High Priority| EL((Event Loop))
+    TQ -->|Low Priority| EL
+    EL -->|Pushes to Stack| CS
+```
+
+### Microtasks vs Macrotasks
+
+- **Microtasks**: Have higher priority. Includes Promises (`then`, `catch`, `finally`), `queueMicrotask`, `MutationObserver`.
+- **Macrotasks (Task Queue)**: Have lower priority. Includes `setTimeout`, `setInterval`, `setImmediate`, DOM events.
+
+---
+
+## Asynchronous JavaScript
+
+### Promises
+
+A Promise represents the eventual completion (or failure) of an asynchronous operation and its resulting value. It has 3 states: `Pending`, `Fulfilled`, `Rejected`.
+
+### Promise Chaining
+
+Executing a sequence of asynchronous tasks where the result of one task is passed to the next using `.then()`.
+
+### Promise Methods
+
+- **Promise.all()**: Waits for all promises to be resolved or for any to be rejected. Returns an array of results.
+- **Promise.allSettled()**: Waits until all promises have settled (each may resolve or reject). Returns an array of objects describing the outcome of each.
+- **Promise.race()**: Waits until any of the promises is resolved or rejected and returns its result/error.
+
+### Async/Await
+
+Syntactic sugar built on top of Promises. Allows asynchronous code to be written in a synchronous-looking manner.
+```js
+async function fetchData() {
+  try {
+    const response = await fetch("api/data");
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error", error);
+  }
 }
-/* In above code greet() function call before declaration 
-and hoisitng helps the declaration value to put on top 
-of code. */
 ```
 
-```jsx
-console.log(a)
-var a = 9; // declartion hoisted at the top nut inilazation not
-console.log(a)
+### Error Handling
 
-output
-// undefined 
- // 9
-```
+Proper error handling in async JS is usually done using `.catch()` with Promises, or `try...catch` blocks within `async/await` functions.
 
-```jsx
-console.log(a)
-let a = 9; // declartion  hoisted but not initilazed
-const a = 9; //same as let work
-console.log(a)
+---
 
-output
-error
-```
+## Browser Concepts
 
-### 3. Define Closure in JS ?
+### Local Storage vs Session Storage vs Cookies
 
-→ In JavaScript, **a closure is created when a function retains access to its lexical (surrounding) scope, even after the outer function has finished execution.**
+| Storage | Capacity | Expiration | Access |
+| :--- | :--- | :--- | :--- |
+| **Local Storage** | ~5MB-10MB | Never (manual clear) | Client-side only |
+| **Session Storage** | ~5MB | On tab close | Client-side only |
+| **Cookies** | ~4KB | Set by expiration time | Client and Server (sent with requests) |
 
-→ An inner function "remembers" the variables from the outer function where it was created, even if that outer function is no longer active.
+### Debouncing
 
-→ “A closure is a function bundled together with a reference to its surrounding scope, allowing it to access those outer variables even after the parent function has returned.”
+A technique to limit the rate at which a function gets invoked. It ensures that a function is not called again until a certain amount of time has passed since the last call. (Useful for search inputs).
 
-```jsx
-function outer() {
-  let secret = "hidden";
-  return function inner() {
-    return secret;
+### Throttling
+
+A technique to limit the execution of a function to once in every specified time interval. (Useful for scrolling or window resizing events).
+
+---
+
+## Frequently Asked Questions
+
+### 1. Explain Closures with examples.
+
+A closure gives an inner function access to an outer function's variables, even after the outer function has returned.
+
+```javascript
+function makeCounter() {
+  let count = 0; // 'count' is enclosed by the inner function
+  return function() {
+    count++;
+    return count;
   };
 }
 
-let getSecret = outer();
-console.log(getSecret()); // "hidden"
+const counter = makeCounter();
+console.log(counter()); // 1
+console.log(counter()); // 2
 ```
 
-- `outer` defines a variable `secret` and returns `inner`.
-- `inner` is returned and assigned to `getSecret`.
-- Even though `outer` has finished executing, `getSecret` (which is `inner`) still has access to `secret` — this is a **closure** in action.
+### 2. How does Event Loop work?
 
-### 4. Define JavaScript ?
+The Event Loop constantly monitors the **Call Stack** and the **Queues** (Microtask and Macrotask queues). If the Call Stack is empty, it first checks the Microtask queue. If there are pending microtasks (like Promise callbacks), it pushes them to the stack one by one. Once the Microtask queue is empty, it pushes the next macrotask (like `setTimeout` callbacks) to the stack.
 
-→ JavaScript is a single threaded , non-blocking, asynchronous concurrent language 
+### 3. Difference between var, let and const?
 
-- It has call stack, an event loop and a callback queue + others APIs.
-- V8 is the JavaScript runtime which has a call stack and a heap
-- The heap is used for memory allocation and the stack holds the execution
-- DOM, setTimeout, XML, HttpRequest dont exist in V8 source code.
+- `var` is function-scoped and allows redeclaration. It is hoisted and initialized with `undefined`.
+- `let` is block-scoped, doesn't allow redeclaration in the same scope, and is hoisted into the Temporal Dead Zone (cannot be accessed before declaration).
+- `const` is exactly like `let` but it cannot be reassigned.
 
-→  `ASYNCHRONOUS CALLBACK`
+### 4. Explain Promise and Async/Await.
 
-- Sometimes the JavaScript code can take a lot of time and this can block the page re-render,
-- JavaScript has asynchronous callbacks for non blocking behaviour.
-- JavaScript runtime can do only one thing at a time
-- Browser gives us other which working along with the runtime like Web APIs [ `setTimeout` , `fetch` etc].
-- In node.js these are available as c++ APIs.
+- **Promise**: An object representing the eventual success or failure of an async operation. It resolves callback hell but can lead to long `.then()` chains.
+- **Async/Await**: Syntactic sugar for Promises introduced in ES8. It allows writing async, promise-based code as if it were synchronous, making code much more readable and easier to debug.
 
-→ `TASKQUEUE`
+### 5. What is Hoisting?
 
-- JavaScript can do only one thing at a time.
-- The rest are queued to the task queue waiting to be executed
-- When we run `setTimeout`, `webAPIs` will run a timer and push the function provided to `setTimeout` to the task queue once the timer ends.
-- These tasks will be pushed to the stack where they can executed .
+Hoisting is a JavaScript mechanism where variable and function declarations are moved to the top of their scope before code execution.
+- Function declarations are fully hoisted.
+- `var` variables are hoisted and set to `undefined`.
+- `let` and `const` are hoisted but uninitialized (Temporal Dead Zone).
 
-### 5. Define Event Loop ?
+### 6. What is Debouncing?
 
-→ JavaScript has a runtime model based on an event loop, which is responsible for executing the code, collecting and processing events and executing queued sub-tasks..
+Debouncing enforces that a function will not be called again until a certain amount of time has passed without it being called. For example, if you have a search bar, you don't want to make an API call for every keystroke. You debounce the API call to only trigger 300ms after the user stops typing.
 
-- The event loop pushes the tasks from the task queue to the call stack.
-- `setTimeout fun(1,0)` can be used to defer a function until all the pending tasks (so far) have been executed.
-- We can see how things work in action by visiting ..
-
-```jsx
-console.log("start");
-setTimeout(() => console.log("timeout"), 0);
-console.log("end");
-// Output: start, end, timeout
-```
-
-### 6. Define Prototyping Chaining ?
-
-→ In JavaScript, every object has a **prototype**—another object from which it inherits properties and methods. This forms a chain known as the **prototype chain**.
-
-- When you try to access a property or method on an object, JavaScript first looks for it on the object itself. If it’s not found, it looks up the object's prototype, then the prototype’s prototype, and so on, until .it either finds the property or reaches the end of the chain (`null`).
-
-```jsx
-function Animal() {}
-Animal.prototype.eat = function() {
-  console.log("eating");
-};
-
-let cat = new Animal();
-cat.eat(); // "eating"
-```
-
-- Here, `Animal` is a constructor function.
-- We add a method `eat` to `Animal.prototype`.
-- When we create `cat` as a new instance of `Animal`, it doesn't have an `eat` method on it directly.
-- When `cat.eat()` is called, JavaScript looks for `eat` on `cat`.
-- `eat` is not found on `cat` itself, so JS looks into `cat`’s prototype (`Animal.prototype`).
-- `Animal.prototype` has an `eat` method, which then gets executed.
-
-```jsx
-cat  ---->  Animal.prototype  ---->  Object.prototype  ---->  null
-```
-
-### 7. Define Data Types ?
-
-→ JavaScript has 8 fundamental data types: String, Number, BigInt, Boolean, undefined, null, Symbol, and Object.
-
-```jsx
-let num = 5;// Number
-let str = "hello";// String
-let obj = { a: 1 };// Object
-let bool = false;// Boolean
-let n = null;// null
-let u = undefined;// undefined
-let sym = Symbol("id");// Symbol
-
-```
-
-### 8. Define Pure Function ?
-
-→ **Pure functions** provide predictable outputs for given inputs without causing side effects. They are central to writing clean, maintainable, and testable code in JavaScript.
-
-```jsx
-function add(a, b) {
-  return a + b;
+```javascript
+function debounce(func, delay) {
+  let timeoutId;
+  return function(...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
 }
 ```
-
-### 9. Define Promises ?
-
-⇒ A **Promise** in JavaScript is an object that represents the eventual completion (or failure) of an asynchronous operation and its resulting value. 
-
-⇒ Promises provide a cleaner and more organized way to handle asynchronous tasks, such as network requests, timers, or reading files, compared to the older "callback" approach.
-
-⇒ A Promise is a foundational pattern for managing asynchronous operations in JavaScript, providing a standardized approach to handle success, failure, and chains of asynchronous
-
- ⇒ Why Use Promises?
-
-- **Cleaner code** compared to deeply nested callbacks (known as "callback hell").
-- **Better error handling** (you can catch errors for an entire chain of asynchronous steps).
-- **Supports chaining**, making asynchronous logic easier to write and reason about.
-
----
-
-- **States of a Promise :**
-
- ⇒   A Promise can be in one of three states:
-
-- **Pending:** The initial state, before the operation has completed.
-- **Fulfilled:** The operation completed successfully, and the promise has a resulting value.
-- **Rejected:** The operation failed, and the promise has a reason for the failure (usually an error).
-
-```jsx
-let checkEven = new Promise((resolve, reject) => {
-  let number = 4;
-  if (number % 2 === 0) resolve("The number is even!");
-  else reject("The number is odd!");
-});
-
-checkEven
-  .then(message => console.log(message))     // Output: The number is even!
-  .catch(error => console.error(error));
-```
-
-- **async/await**
-
-Modern JavaScript supports `async` functions and the `await` keyword, which are built on top of promises to make writing asynchronous code look more like synchronous code:
-
-```jsx
-
-async function getData() {
-  try {
-    let response = await fetch('/resource');
-    let data = await response.json();
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-```
-
-### 10. Define Callbacks ?
-
-⇒ A **callback** is a function provided to another function to be called at the right time — whether immediately or after an asynchronous operation. It is a central idea in JavaScript for creating 
-dynamic, event-driven, and non-blocking programs
-
-**⇒ How Do Callbacks Work?**
-
-- **Passing the function:**
-    
-    You pass a function as an argument to another function.
-    
-- **Executing the callback:**
-    
-    The outer function calls the callback at the appropriate time. This can be immediately (synchronous) or later (asynchronous, such as after an event or a timer).
-    
-
-**→ Synchronous Function** 
-
-```jsx
-function greet(name, callback) {
-  console.log("Hello, " + name);
-  callback();
-}
-
-function sayBye() {
-  console.log("Goodbye!");
-}
-
-greet("Sam", sayBye);
-// Output:
-// Hello, Sam
-// Goodbye!
-```
-
-`sayBye` is the callback passed to `greet` and is called after the greeting.
-****
-
-**→ Asynchronous Callback Example**
-
-Callbacks are essential for handling asynchronous actions in JavaScript, such as timers, HTTP requests, or events.
-
-```jsx
-console.log("Start");
-setTimeout(function () {
-  console.log("Inside setTimeout");
-}, 2000);
-console.log("End");
-// Output:
-// Start
-// End
-// Inside setTimeout (after 2 seconds)
-
-```
-
-the function passed to `setTimeout` is a callback executed after a 2-second delay.
-
-### 11. Define Async and Await ?
-
-**Async :-** 
-
-⇒ The `async` keyword is used before a function to turn it into an **asynchronous function**.
-
-⇒ An async function **always returns a Promise**, regardless of what you return inside
-
-⇒ If you return a non-promise value (like a string or number), JavaScript automatically wraps it in a resolved Promise.
-
-```jsx
-async function hello() {
-  return "Hello, world!"; // this is wrapped in a Promise
-}
-
-hello().then(msg => console.log(msg)); // Output: Hello, world!
-```
-
-**Await :-**
-
- ⇒ The `await` keyword can only be used inside async functions.
-
- ⇒  `await` pauses the execution of the async function (not the whole program!)
-until the Promise settles. Then it resumes and returns the resolved
-value.
-
-⇒ This allows you to write **asynchronous code that looks synchronous**, making it easier to read and maintain.
